@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    username: sa
+    password: password
+    url: jdbc:h2:file:/tmp/myfile
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+      enabled: true
+
+server:
+  port: 9191
+
+application:
+  response:
+    maxAttempts: 3
