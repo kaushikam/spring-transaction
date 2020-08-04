@@ -1,11 +1,12 @@
 package com.kaushikam.transactions.application.impl
 
 import com.kaushikam.transactions.application.IPaymentService
+import com.kaushikam.transactions.common.exception.BaseRuntimeException
+import com.kaushikam.transactions.common.exception.ErrorCode
 import com.kaushikam.transactions.domain.model.payment.*
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.lang.IllegalArgumentException
@@ -33,8 +34,7 @@ class PaymentServiceImpl(
     override fun savePaymentResponse(informationId: Long,
                                      paymentResponse: PaymentResponseDTO,
                                      responseTime: LocalDateTime): PaymentInformation {
-        val paymentInformation = informationRepository.findById(informationId)
-            ?: throw IllegalArgumentException("There is no such payment information with id $informationId")
+        val paymentInformation = findPaymentInformation(informationId)
         paymentInformation.receiveResponse(paymentResponse, responseTime)
         informationRepository.save(paymentInformation)
         return paymentInformation
@@ -49,11 +49,20 @@ class PaymentServiceImpl(
         }
         logger.info { "Receipt id is ${paymentInformation.receipt!!.id}" }
         informationRepository.save(paymentInformation)
-        throw IllegalArgumentException("Testing whether response alone gets saved")
         return paymentInformation
     }
 
     override fun listAllInformation(): List<PaymentInformation> {
         return this.informationRepository.findAll()
     }
+
+    private fun findPaymentInformation(informationId: Long): PaymentInformation {
+        return informationRepository.findById(informationId)
+            ?: throw PaymentInformationNotFoundException(informationId = informationId)
+    }
 }
+
+class PaymentInformationNotFoundException(
+    override val errorCode: ErrorCode = ErrorCode.PAYMENT_INFORMATION_NOT_FOUND,
+    informationId: Long
+): BaseRuntimeException("There is no payment information id found with id $informationId", errorCode, arrayOf(informationId), null)

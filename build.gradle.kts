@@ -46,6 +46,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.vladmihalcea:hibernate-types-52:2.9.13")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
